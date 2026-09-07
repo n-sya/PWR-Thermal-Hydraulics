@@ -216,6 +216,3 @@ Coolant properties are held constant throughout the channel. Therefore, changes 
 
 Possible extensions include temperature-dependent coolant properties, spacer-grid and local pressure losses, additional heat-transfer correlations, and more detailed subchannel modelling.
 
-# Disclaimer
-
-This project is an educational thermal-hydraulics model developed for engineering analysis and software development practice. It is not intended for reactor design, operation, or safety analysis.
