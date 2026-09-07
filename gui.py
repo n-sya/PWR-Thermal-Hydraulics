@@ -174,7 +174,7 @@ class PWRThermalHydraulicsGUI:
 
         results_frame = ttk.LabelFrame(
             sidebar,
-            text="Results",
+            text="Analysis Results",
             padding=10,
         )
         results_frame.grid(
@@ -186,6 +186,7 @@ class PWRThermalHydraulicsGUI:
 
         results = [
             ("Reynolds Number", "reynolds_number"),
+            ("Flow Regime", "flow_regime"),
             ("Prandtl Number", "prandtl_number"),
             ("Nusselt Number", "nusselt_number"),
             (
@@ -355,8 +356,18 @@ class PWRThermalHydraulicsGUI:
             )
 
     def update_results(self, results):
+        reynolds_number = results["reynolds_number"]
+
+        if reynolds_number < 2300:
+            flow_regime = "Laminar"
+        elif reynolds_number < 10000:
+            flow_regime = "Transition"
+        else:
+            flow_regime = "Turbulent"
+
         display_values = {
             "reynolds_number": f'{results["reynolds_number"]:.3e}',
+            "flow_regime": flow_regime,
             "prandtl_number": f'{results["prandtl_number"]:.3f}',
             "nusselt_number": f'{results["nusselt_number"]:.3f}',
             "heat_transfer_coefficient": (
