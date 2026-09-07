@@ -18,6 +18,8 @@ from calculations import (
     calculate_reynolds_number,
     calculate_wetted_perimeter,
     calculate_axial_profiles,
+    calculate_peak_boundary_layer_temperature_difference,
+    calculate_peak_heat_flux,
 )
 
 
@@ -456,3 +458,32 @@ def test_axial_profiles_reject_less_than_two_points():
             channel_pressure_drop=50000.0,
             number_of_points=1,
         )
+
+def test_calculate_peak_heat_flux():
+    peak_linear_power = 25000.0
+    fuel_rod_diameter = 0.0095
+
+    expected = peak_linear_power / (
+        math.pi * fuel_rod_diameter
+    )
+
+    result = calculate_peak_heat_flux(
+        peak_linear_power,
+        fuel_rod_diameter,
+    )
+
+    assert result == pytest.approx(expected)
+
+
+def test_calculate_peak_boundary_layer_temperature_difference():
+    peak_heat_flux = 800000.0
+    heat_transfer_coefficient = 30000.0
+
+    expected = peak_heat_flux / heat_transfer_coefficient
+
+    result = calculate_peak_boundary_layer_temperature_difference(
+        peak_heat_flux,
+        heat_transfer_coefficient,
+    )
+
+    assert result == pytest.approx(expected)
