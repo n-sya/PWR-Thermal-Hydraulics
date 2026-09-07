@@ -193,11 +193,19 @@ class PWRThermalHydraulicsGUI:
                 "heat_transfer_coefficient",
             ),
             (
+                "Peak Heat Flux",
+                "peak_heat_flux",
+            ),
+            (
+                "Peak Boundary Layer ΔT",
+                "peak_boundary_layer_temperature_difference",
+            ),
+            (
                 "Fanning Friction Factor",
                 "fanning_friction_factor",
             ),
             (
-                "Pressure Drop",
+                "Channel Pressure Drop",
                 "channel_pressure_drop",
             ),
             (
@@ -205,7 +213,7 @@ class PWRThermalHydraulicsGUI:
                 "outlet_temperature",
             ),
             (
-                "Temperature Rise",
+                "Channel Temperature Rise",
                 "temperature_rise",
             ),
         ]
@@ -271,7 +279,7 @@ class PWRThermalHydraulicsGUI:
         )
         self.notebook.add(
             self.pressure_drop_tab,
-            text="Pressure Drop",
+            text="Channel Pressure Drop",
         )
 
         for tab in (
@@ -353,6 +361,12 @@ class PWRThermalHydraulicsGUI:
             "nusselt_number": f'{results["nusselt_number"]:.3f}',
             "heat_transfer_coefficient": (
                 f'{results["heat_transfer_coefficient"]:.3f} W/m²·K'
+            ),
+            "peak_heat_flux": (
+                f'{results["peak_heat_flux"]:.3e} W/m²'
+            ),
+            "peak_boundary_layer_temperature_difference": (
+                f'{results["peak_boundary_layer_temperature_difference"]:.3f} K'
             ),
             "fanning_friction_factor": (
                 f'{results["fanning_friction_factor"]:.5f}'

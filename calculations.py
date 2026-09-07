@@ -151,6 +151,36 @@ def calculate_heat_transfer_coefficient(
         / hydraulic_diameter
     )
 
+# Calculate the peak heat flux at the fuel rod surface
+def calculate_peak_heat_flux(
+    peak_linear_power,
+    fuel_rod_diameter,
+):
+    if peak_linear_power < 0:
+        raise ValueError("Peak linear power must not be negative.")
+
+    if fuel_rod_diameter <= 0:
+        raise ValueError("Fuel rod diameter must be greater than zero.")
+
+    return peak_linear_power / (
+        math.pi * fuel_rod_diameter
+    )
+
+
+# Calculate the peak coolant boundary layer temperature difference
+def calculate_peak_boundary_layer_temperature_difference(
+    peak_heat_flux,
+    heat_transfer_coefficient,
+):
+    if peak_heat_flux < 0:
+        raise ValueError("Peak heat flux must not be negative.")
+
+    if heat_transfer_coefficient <= 0:
+        raise ValueError(
+            "Heat transfer coefficient must be greater than zero."
+        )
+
+    return peak_heat_flux / heat_transfer_coefficient
 
 # Calculate the Fanning friction factor
 def calculate_fanning_friction_factor(reynolds_number):

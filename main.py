@@ -11,7 +11,10 @@ from calculations import (
     calculate_prandtl_number,
     calculate_reynolds_number,
     calculate_wetted_perimeter,
+    calculate_peak_boundary_layer_temperature_difference,
+    calculate_peak_heat_flux,
 )
+
 from variables import (
     DEFAULT_COOLANT_DENSITY,
     DEFAULT_COOLANT_INLET_TEMPERATURE,
@@ -84,6 +87,18 @@ def run_analysis(
         hydraulic_diameter,
     )
 
+    peak_heat_flux = calculate_peak_heat_flux(
+        peak_linear_power,
+        fuel_rod_diameter,
+    )
+
+    peak_boundary_layer_temperature_difference = (
+        calculate_peak_boundary_layer_temperature_difference(
+            peak_heat_flux,
+            heat_transfer_coefficient,
+        )
+    )
+
     fanning_friction_factor = calculate_fanning_friction_factor(
         reynolds_number,
     )
@@ -115,6 +130,10 @@ def run_analysis(
         "prandtl_number": prandtl_number,
         "nusselt_number": nusselt_number,
         "heat_transfer_coefficient": heat_transfer_coefficient,
+        "peak_heat_flux": peak_heat_flux,
+        "peak_boundary_layer_temperature_difference": (
+            peak_boundary_layer_temperature_difference
+        ),
         "fanning_friction_factor": fanning_friction_factor,
         "channel_pressure_drop": channel_pressure_drop,
         "outlet_temperature": outlet_temperature,
