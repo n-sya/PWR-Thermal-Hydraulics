@@ -1,5 +1,5 @@
 import math
-
+import numpy as np
 
 # Calculate the coolant flow area for one square-lattice subchannel
 def calculate_flow_area(lattice_pitch, fuel_rod_diameter):
@@ -318,3 +318,81 @@ def calculate_clad_surface_temperature(
             * heat_transfer_coefficient
         )
     )
+
+# Calculate the thermal-hydraulic profiles along the channel
+def calculate_axial_profiles(
+    channel_length,
+    peak_linear_power,
+    mass_flow_rate,
+    specific_heat_capacity,
+    inlet_temperature,
+    fuel_rod_diameter,
+    heat_transfer_coefficient,
+    channel_pressure_drop,
+    number_of_points=201,
+):
+    if number_of_points < 2:
+        raise ValueError("Number of points must be at least two.")
+
+    axial_position = np.linspace(
+        -channel_length / 2,
+        channel_length / 2,
+        number_of_points,
+    )
+
+    linear_power = np.array(
+        [
+            calculate_linear_power(
+                position,
+                channel_length,
+                peak_linear_power,
+            )
+            for position in axial_position
+        ]
+    )
+
+    coolant_temperature = np.array(
+        [
+            calculate_coolant_temperature(
+                position,
+                channel_length,
+                peak_linear_power,
+                mass_flow_rate,
+                specific_heat_capacity,
+                inlet_temperature,
+            )
+            for position in axial_position
+        ]
+    )
+
+    clad_surface_temperature = np.array(
+        [
+            calculate_clad_surface_temperature(
+                temperature,
+                power,
+                fuel_rod_diameter,
+                heat_transfer_coefficient,
+            )
+            for temperature, power in zip(
+                coolant_temperature,
+                linear_power,
+            )
+        ]
+    )
+
+    distance_from_inlet = axial_position + channel_length / 2
+
+    pressure_drop = (
+        channel_pressure_drop
+        * distance_from_inlet
+        / channel_length
+    )
+
+    return {
+        "axial_position": axial_position,
+        "distance_from_inlet": distance_from_inlet,
+        "linear_power": linear_power,
+        "pressure_drop": pressure_drop,
+        "coolant_temperature": coolant_temperature,
+        "clad_surface_temperature": clad_surface_temperature,
+    }
