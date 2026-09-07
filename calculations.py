@@ -119,11 +119,13 @@ def calculate_nusselt_number(reynolds_number, prandtl_number):
     if prandtl_number <= 0:
         raise ValueError("Prandtl number must be greater than zero.")
 
-    return (
-        0.023
-        * reynolds_number**0.8
-        * prandtl_number**0.4
-    )
+    if reynolds_number < 10000:
+        raise ValueError(
+            "Dittus-Boelter correlation requires turbulent flow with Reynolds number "
+            "greater than or equal to 10000."
+        )
+
+    return 0.023 * reynolds_number**0.8 * prandtl_number**0.4
 
 
 # Calculate the convective heat transfer coefficient
