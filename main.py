@@ -1,4 +1,5 @@
 from calculations import (
+    calculate_axial_profiles,
     calculate_channel_pressure_drop,
     calculate_coolant_velocity,
     calculate_fanning_friction_factor,
@@ -23,6 +24,7 @@ from variables import (
     DEFAULT_SUBCHANNEL_MASS_FLOW_RATE,
     DEFAULT_THERMAL_CONDUCTIVITY,
 )
+from visualisation import show_all_plots
 
 
 # Run the complete PWR subchannel thermal-hydraulics calculation
@@ -44,7 +46,7 @@ def run_analysis(
     )
 
     wetted_perimeter = calculate_wetted_perimeter(
-        fuel_rod_diameter
+        fuel_rod_diameter,
     )
 
     hydraulic_diameter = calculate_hydraulic_diameter(
@@ -76,18 +78,14 @@ def run_analysis(
         prandtl_number,
     )
 
-    heat_transfer_coefficient = (
-        calculate_heat_transfer_coefficient(
-            nusselt_number,
-            thermal_conductivity,
-            hydraulic_diameter,
-        )
+    heat_transfer_coefficient = calculate_heat_transfer_coefficient(
+        nusselt_number,
+        thermal_conductivity,
+        hydraulic_diameter,
     )
 
-    fanning_friction_factor = (
-        calculate_fanning_friction_factor(
-            reynolds_number
-        )
+    fanning_friction_factor = calculate_fanning_friction_factor(
+        reynolds_number,
     )
 
     channel_pressure_drop = calculate_channel_pressure_drop(
@@ -140,3 +138,16 @@ if __name__ == "__main__":
 
     for name, value in results.items():
         print(f"{name}: {value:.6g}")
+
+    profiles = calculate_axial_profiles(
+        channel_length=DEFAULT_FUEL_ROD_LENGTH,
+        peak_linear_power=DEFAULT_PEAK_LINEAR_POWER,
+        mass_flow_rate=DEFAULT_SUBCHANNEL_MASS_FLOW_RATE,
+        specific_heat_capacity=DEFAULT_SPECIFIC_HEAT_CAPACITY,
+        inlet_temperature=DEFAULT_COOLANT_INLET_TEMPERATURE,
+        fuel_rod_diameter=DEFAULT_FUEL_ROD_DIAMETER,
+        heat_transfer_coefficient=results["heat_transfer_coefficient"],
+        channel_pressure_drop=results["channel_pressure_drop"],
+    )
+
+    show_all_plots(profiles)
