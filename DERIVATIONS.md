@@ -70,6 +70,26 @@ Therefore:
 
 $$h = \frac{Nu\,k}{D_h}$$
 
+# Peak Heat Flux
+
+The local heat flux at the fuel rod surface is related to the linear power by:
+
+$$q''(z) = \frac{q'(z)}{\pi d}$$
+
+The peak heat flux therefore occurs at the peak linear power:
+
+$$q''_{\text{peak}} = \frac{q'_{\text{peak}}}{\pi d}$$
+
+# Peak Boundary Layer Temperature Difference
+
+The temperature difference between the clad surface and bulk coolant due to convection is:
+
+$$\Delta T_{\text{BL}} = \frac{q''}{h}$$
+
+Therefore, the peak boundary layer temperature difference is:
+
+$$\Delta T_{\text{BL,peak}} = \frac{q''_{\text{peak}}}{h}$$
+
 # Fanning Friction Factor
 
 For turbulent flow:
