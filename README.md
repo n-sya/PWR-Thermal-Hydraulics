@@ -119,7 +119,7 @@ The graphical interface allows the model parameters to be modified without chang
 
 After selecting the required inputs, press **Run Analysis** to calculate the thermal-hydraulic results and update all three plots.
 
-<!-- Add GUI screenshot here -->
+![PWR Thermal-Hydraulics GUI](images/PWR-Thermal-Hyrdraulics.png)
 
 # Installation
 
