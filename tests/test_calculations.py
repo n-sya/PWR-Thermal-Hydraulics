@@ -17,6 +17,7 @@ from calculations import (
     calculate_prandtl_number,
     calculate_reynolds_number,
     calculate_wetted_perimeter,
+    calculate_axial_profiles,
 )
 
 
@@ -300,3 +301,158 @@ def test_clad_temperature_is_above_coolant_when_power_is_positive():
     )
 
     assert result > coolant_temperature
+
+def test_axial_profiles_have_correct_number_of_points():
+    profiles = calculate_axial_profiles(
+        channel_length=3.66,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+        number_of_points=201,
+    )
+
+    assert len(profiles["axial_position"]) == 201
+    assert len(profiles["distance_from_inlet"]) == 201
+    assert len(profiles["linear_power"]) == 201
+    assert len(profiles["pressure_drop"]) == 201
+    assert len(profiles["coolant_temperature"]) == 201
+    assert len(profiles["clad_surface_temperature"]) == 201
+
+
+def test_axial_position_runs_from_minus_half_length_to_plus_half_length():
+    channel_length = 3.66
+
+    profiles = calculate_axial_profiles(
+        channel_length=channel_length,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+    )
+
+    assert profiles["axial_position"][0] == pytest.approx(
+        -channel_length / 2
+    )
+    assert profiles["axial_position"][-1] == pytest.approx(
+        channel_length / 2
+    )
+
+
+def test_distance_from_inlet_runs_from_zero_to_channel_length():
+    channel_length = 3.66
+
+    profiles = calculate_axial_profiles(
+        channel_length=channel_length,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+    )
+
+    assert profiles["distance_from_inlet"][0] == pytest.approx(0.0)
+    assert profiles["distance_from_inlet"][-1] == pytest.approx(
+        channel_length
+    )
+
+
+def test_linear_power_is_peak_at_channel_centre_in_profile():
+    profiles = calculate_axial_profiles(
+        channel_length=3.66,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+        number_of_points=201,
+    )
+
+    centre_index = len(profiles["linear_power"]) // 2
+
+    assert profiles["linear_power"][centre_index] == pytest.approx(
+        25000.0
+    )
+
+
+def test_pressure_drop_profile_starts_at_zero_and_ends_at_total():
+    total_pressure_drop = 50000.0
+
+    profiles = calculate_axial_profiles(
+        channel_length=3.66,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=total_pressure_drop,
+    )
+
+    assert profiles["pressure_drop"][0] == pytest.approx(0.0)
+    assert profiles["pressure_drop"][-1] == pytest.approx(
+        total_pressure_drop
+    )
+
+
+def test_coolant_temperature_increases_along_channel():
+    profiles = calculate_axial_profiles(
+        channel_length=3.66,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+    )
+
+    assert profiles["coolant_temperature"][-1] > (
+        profiles["coolant_temperature"][0]
+    )
+
+
+def test_clad_temperature_is_not_below_coolant_temperature():
+    profiles = calculate_axial_profiles(
+        channel_length=3.66,
+        peak_linear_power=25000.0,
+        mass_flow_rate=0.3,
+        specific_heat_capacity=5476.0,
+        inlet_temperature=573.0,
+        fuel_rod_diameter=0.0095,
+        heat_transfer_coefficient=30000.0,
+        channel_pressure_drop=50000.0,
+    )
+
+    assert all(
+        clad_temperature >= coolant_temperature
+        for clad_temperature, coolant_temperature in zip(
+            profiles["clad_surface_temperature"],
+            profiles["coolant_temperature"],
+        )
+    )
+
+
+def test_axial_profiles_reject_less_than_two_points():
+    with pytest.raises(ValueError):
+        calculate_axial_profiles(
+            channel_length=3.66,
+            peak_linear_power=25000.0,
+            mass_flow_rate=0.3,
+            specific_heat_capacity=5476.0,
+            inlet_temperature=573.0,
+            fuel_rod_diameter=0.0095,
+            heat_transfer_coefficient=30000.0,
+            channel_pressure_drop=50000.0,
+            number_of_points=1,
+        )
